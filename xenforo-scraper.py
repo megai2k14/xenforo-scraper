@@ -25,7 +25,12 @@ parser.add_argument('-nv', '--no-videos', help="Don't download videos.", action=
 parser.add_argument('-d', '--debug', help=argparse.SUPPRESS, action="store_true")
 args = parser.parse_args()
 
-cookies = {'cookie': args.cookie}
+cookies = {}
+cookiesarray = args.cookie.split(";")
+for cookiestring in cookiesarray:
+    [key, value] = cookiestring.split("=")
+    cookies[key.strip()] = value.strip()
+
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
                          'Chrome/39.0.2171.95 Safari/537.36'}
 badchars = (';', ':', '!', '*', '/', '\\', '?', '"', '<', '>', '|')
