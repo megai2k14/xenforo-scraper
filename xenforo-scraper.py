@@ -226,7 +226,7 @@ def scrapepage(url):
         try:
             req = requests.get(i, stream=True, cookies=cookies, headers=headers, timeout=10)
             filesize = int(req.headers['content-length'])
-            filename = re.findall("filename=\"(.+)\"", req.headers['content-disposition'])[0]
+            filename = removebadchars(re.findall("filename=\"(.+)\"", req.headers['content-disposition'])[0])
             truncated = (filename[:60] + '..') if len(filename) > 60 else filename
             fullpath = os.path.join(*getoutputpath(title), filename)
         except Exception as e:
