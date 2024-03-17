@@ -129,6 +129,10 @@ def gettitle(soup):
         title = title.replace(char, '_')
     return title
 
+def removebadchars(string):
+    for char in badchars:
+        string = string.replace(char, '_')
+    return string
 
 # Inputs a title, and returns a path depending on given --output parameter and --no-directories.
 def getoutputpath(title):
