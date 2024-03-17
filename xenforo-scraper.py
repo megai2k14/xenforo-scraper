@@ -125,8 +125,7 @@ def getpages(soup, url):
 # Inputs a soup-object and returns the title of the thread
 def gettitle(soup):
     title = soup.find("h1", "p-title-value").text
-    for char in badchars:
-        title = title.replace(char, '_')
+    title = removebadchars(title)
     return title
 
 def removebadchars(string):
