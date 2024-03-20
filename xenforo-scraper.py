@@ -139,7 +139,7 @@ def getoutputpath(title):
     if args.output:
         entrypath.append(args.output)
     if not args.no_directories:
-        entrypath.append(title)
+        entrypath.append(re.sub("\.*$", "", title))
     return entrypath
 
 
@@ -240,15 +240,23 @@ def scrapepage(url):
         if args.debug:
             print("Saving to:", fullpath)
 
+        import pdb
         if os.path.exists(fullpath):
-            print(f"\x1b[KProgress: {count}/{len(files)} - Skipping {truncated}", end="\r")
+            filename, extension = os.path.splitext(fullpath)
+            counter = 1
+            while os.path.exists(fullpath):
+                if os.path.getsize(fullpath) == filesize:
+                    print(f"\n[KProgress: {count}/{len(files)} - Skipping {truncated}", end="\r")
+                    break
+                fullpath = f"{filename} + ({counter}){extension}"
+                counter += 1
             continue
 
         if (maxsize is None or (maxsize is not None and filesize <= maxsize)) and (
                 minsize is None or (minsize is not None and filesize >= minsize)):
             difference = time.time() - timestamp
             print(
-                f"\x1b[KSpeed: {bytesToShort(totaldownloaded / difference)}/s Progress: {count}/{len(files)}"
+                f"\n[KSpeed: {bytesToShort(totaldownloaded / difference)}/s Progress: {count}/{len(files)}"
                 f" - DL: {truncated} ({bytesToShort(filesize)})", end="\r")
             with open(fullpath, 'wb') as file:
                 for chunk in req.iter_content(chunk_size=4096):
@@ -256,7 +264,7 @@ def scrapepage(url):
             totaldownloaded += filesize
         else:
             print(
-                f"\x1b[KProgress: {count}/{len(files)} - Wrong filesize {truncated} ({bytesToShort(filesize)})",
+                f"\n[KProgress: {count}/{len(files)} - Wrong filesize {truncated} ({bytesToShort(filesize)})",
                 end="\r")
 
 
@@ -284,7 +292,7 @@ def main():
 
         # Get all pages on category
         for precount, category in enumerate(pages, start=1):
-            print(f"\x1b[KGetting pages from category.. Current: {precount}/{len(pages)}\r")
+            print(f"\n[KGetting pages from category.. Current: {precount}/{len(pages)}\r")
             allthreads += getthreads(category)
 
         # Getting all threads from category pages
@@ -299,11 +307,11 @@ def main():
             if args.cont and os.path.exists(os.path.join(*getoutputpath(title))):
                     print("Thread already exists, skipping:", truncated)
                     continue
-            print(f"\x1b[KThread: {truncated} - ({threadcount}/{len(allthreads)})")
+            print(f"\n[KThread: {truncated} - ({threadcount}/{len(allthreads)})")
 
             # Getting all pages for all threads
             for pagecount, page in enumerate(pages, start=1):
-                print(f"\x1b[KProgress: Page {pagecount}/{len(pages)}", end="\r")
+                print(f"\n[KProgress: Page {pagecount}/{len(pages)}", end="\r")
                 scrapepage(page)
 
     # Input is just one thread, get pages and scrape it.
@@ -315,9 +323,9 @@ def main():
         timestamp = time.time()
 
         # Getting pages all for this single thread.
-        print("\x1b[KThread: {0}".format(title))
+        print("\n[KThread: {0}".format(title))
         for pagecount, page in enumerate(pages, start=1):
-            print(f"\x1b[KProgress: Page {pagecount}/{len(pages)}", end="\r")
+            print(f"\n[KProgress: Page {pagecount}/{len(pages)}", end="\r")
             scrapepage(args.url + "page-" + str(pagecount))
 
 
