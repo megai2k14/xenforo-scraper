@@ -154,7 +154,7 @@ def scrapepage(url):
 
     # Embedded images
     if not args.no_images:
-        imgtags = soup.findAll("img")
+        imgtags = soup.find_all("img")
         for image in imgtags:
             if image.has_attr('src'):
                 src = image.attrs['src']
@@ -170,9 +170,9 @@ def scrapepage(url):
 
     # Embedded videos
     if not args.no_videos:
-        videotags = soup.findAll("video")
+        videotags = soup.find_all("video")
         for video in videotags:
-            children = video.findChildren("source")
+            children = video.find_all("source")
             for node in children:
                 src = node.attrs['src']
                 if not src.startswith('http'):
@@ -315,7 +315,7 @@ def main():
                 scrapepage(page)
 
     # Input is just one thread, get pages and scrape it.
-    if "threads/" in args.url:
+    if "t/" in args.url:
         soup = requestsite(args.url)
         pages = getpages(soup, args.url)
         title = gettitle(soup)
